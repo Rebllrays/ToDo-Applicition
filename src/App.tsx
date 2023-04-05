@@ -1,56 +1,81 @@
-import React from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
-import './App.css';
+import Container from "@mui/material/Container";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
+import { DragDropContext, DropResult } from "react-beautiful-dnd";
+import { useDispatch, useSelector } from "react-redux";
+import { ToDoColumn } from "./components/columns/ToDo";
+import { DoneColumn } from "./components/columns/Done";
+import { InProgressColumn } from "./components/columns/InProgress";
+import { todoSlice as todo } from "./redux/slice/todo";
+import { inProgressSlice as inProgress } from "./redux/slice/inProgress";
+import { doneSlice as done } from "./redux/slice/done";
+import { StoreState } from "./redux/store";
+import { IModel } from "./types";
+import "./styles/index.css";
+
+type TAllSilces = "todo" | "inProgress" | "done";
 
 function App() {
+  const dispatch = useDispatch();
+  const appState = useSelector((state: StoreState) => state);
+
+  const onDragEnd = (result: DropResult) => {
+    if (!result.destination) {
+      return;
+    }
+
+    const { destination, source, draggableId } = result;
+    const allSlices = { todo, inProgress, done };
+
+    if (destination.droppableId === source.droppableId) {
+      dispatch(
+        allSlices[destination.droppableId as TAllSilces].actions.reorder(result)
+      );
+    } else {
+      const [filterState] = (
+        (appState as any)[source.droppableId] as IModel[]
+      ).filter(({ id }) => id === draggableId);
+
+      dispatch(
+        allSlices[source.droppableId as TAllSilces].actions.remove(draggableId)
+      );
+      dispatch(
+        allSlices[destination.droppableId as TAllSilces].actions.update({
+          ...result,
+          filterState,
+        })
+      );
+    }
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
+    <div className="wrapper_todo">
+      <Container className="container">
+        <Typography
+          textAlign="center"
+          variant="h3"
+          mt={3}
+          mb={5}
+          className="container_title"
+        >
+          ToDo Application
+        </Typography>
+        <div className="container__content">
+          <Grid container spacing={3} justifyContent="center">
+            <DragDropContext onDragEnd={(res) => onDragEnd(res)}>
+              <Grid item md={4}>
+                <ToDoColumn />
+              </Grid>
+              <Grid item md={4}>
+                <InProgressColumn />
+              </Grid>
+              <Grid item md={4}>
+                <DoneColumn />
+              </Grid>
+            </DragDropContext>
+          </Grid>
+        </div>
+      </Container>
     </div>
   );
 }

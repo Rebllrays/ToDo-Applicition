@@ -1,0 +1,38 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  background-color: #5770da !important;
+}
+.container {
+  background-color: #fff;
+  border-radius: 30px;
+  /* font-family: "Syne", sans-serif; */
+}
+.container h3 {
+  font-family: "Syne", sans-serif;
+  font-weight: 700;
+  color: #00334f;
+}
+.container__content p {
+  color: #00334f;
+  font-family: "Syne", sans-serif;
+  font-weight: 500;
+  font-size: 22px;
+  border: 1px solid #345678;
+  border-radius: 3px;
+  padding: 5px;
+  background-color: #b9d9eb;
+}
+.container_list li {
+  /* background-color: #f6eb61; */
+  font-family: "Syne", sans-serif;
+}
+.content_box input {
+  font-family: "Syne", sans-serif;
+}
+span {
+  font-family: "Syne", sans-serif;
+}
